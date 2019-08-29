@@ -276,6 +276,9 @@ erpc_transport_t erpc_transport_rpmsg_linux_init(int16_t local_addr, int8_t type
 void erpc_transport_rpmsg_linux_deinit(void);
 //@}
 
+erpc_transport_t erpc_transport_tcp_server_init(const char *host, uint16_t port);
+erpc_transport_t erpc_transport_tcp_client_init(const char *host, uint16_t port);
+
 //@}
 
 #ifdef __cplusplus
