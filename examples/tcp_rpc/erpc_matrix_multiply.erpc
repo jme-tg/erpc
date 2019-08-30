@@ -19,5 +19,5 @@ const int32 matrix_size = 5;
 type Matrix = int32[matrix_size][matrix_size];
 
 interface MatrixMultiplyService {
-    erpcMatrixMultiply(in Matrix matrix1, in Matrix matrix2, out Matrix result_matrix) -> void
+    erpcMatrixMultiply(in Matrix matrix1, in Matrix matrix2, inout Matrix result_matrix) -> void
 }
