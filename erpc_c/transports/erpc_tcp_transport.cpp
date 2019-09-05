@@ -16,6 +16,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <netinet/tcp.h>
 
 using namespace erpc;
 
@@ -117,6 +118,19 @@ erpc_status_t TCPTransport::connectClient(void)
         {
             continue;
         }
+
+        #if 1
+        int yes = 1;
+        // Disable Nagle's algorithm	
+        result = setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, &yes, sizeof(yes));
+        if (result < 0)
+        {
+            TCP_DEBUG_ERR("setsockopt failed");
+            ::close(sock);
+            sock = -1;
+            continue;
+        }
+        #endif
 
         // Attempt to connect.
         if (connect(sock, res->ai_addr, res->ai_addrlen) < 0)
@@ -273,6 +287,17 @@ void TCPTransport::serverThread(void)
         ::close(serverSocket);
         return;
     }
+
+    #if 1
+    // Disable Nagle's algorithm	
+	result = setsockopt(serverSocket, IPPROTO_TCP, TCP_NODELAY, &yes, sizeof(yes));
+	if (result < 0)
+	{
+		TCP_DEBUG_ERR("setsockopt failed");
+		::close(serverSocket);
+		return;
+	}
+    #endif
 
     // Bind socket to address.
     result = bind(serverSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress));
