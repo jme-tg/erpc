@@ -121,7 +121,7 @@ erpc_status_t TCPTransport::connectClient(void)
 
         #if 1
         int yes = 1;
-        // Disable Nagle's algorithm	
+        // Disable Nagle's algorithm
         result = setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, &yes, sizeof(yes));
         if (result < 0)
         {
@@ -131,6 +131,7 @@ erpc_status_t TCPTransport::connectClient(void)
             continue;
         }
         #endif
+
 
         // Attempt to connect.
         if (connect(sock, res->ai_addr, res->ai_addrlen) < 0)
@@ -202,6 +203,12 @@ erpc_status_t TCPTransport::underlyingReceive(uint8_t *data, uint32_t size)
     }
 
     ssize_t length = 0;
+
+    #if 1
+    // Workaround for Xilinx waiting for our ACK 40ms
+    int yes = 1;
+    setsockopt(m_socket, IPPROTO_TCP, TCP_QUICKACK, &yes, sizeof(yes));
+    #endif
 
     // Loop until all requested data is received.
     while (size)
@@ -289,7 +296,7 @@ void TCPTransport::serverThread(void)
     }
 
     #if 1
-    // Disable Nagle's algorithm	
+    // Disable Nagle's algorithm
 	result = setsockopt(serverSocket, IPPROTO_TCP, TCP_NODELAY, &yes, sizeof(yes));
 	if (result < 0)
 	{
